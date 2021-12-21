@@ -6,8 +6,9 @@ export class GradeSchool {
   roster() {
     [this.grades.entries()]
         .sort();
-
-    return Object.fromEntries(this.grades);
+    const newMap = new Map();
+    this.grades.forEach((names, grade) => newMap.set(grade, new Array(...names)));
+    return Object.fromEntries(newMap);
   }
 
 
@@ -17,25 +18,28 @@ export class GradeSchool {
       let actual = this.grades.get(grade.toString());
 
       if (existName) {
-          for (const student of this.grades.values()) {
-              const index: number = student.indexOf(name);
+          this.grades.forEach((names, grade) => {
+              const index = names.indexOf(name);
               if (index !== -1) {
-                  console.log(this.grades.get(grade.toString()));
+                  names.splice(index, 1);
               }
-          }
+          })
       }
 
       if (!actual) {
           this.grades.set(grade.toString(), []);
           actual = this.grades.get(grade.toString());
       }
-      actual.push(name);
-      actual.sort();
+      actual!.push(name);
+      actual!.sort();
   }
 
 
   grade(grade: number) {
-      return this.grades.get(grade.toString());
+      if (!this.grades.has(grade.toString())) {
+          return [];
+      }
+      return new Array(...this.grades.get(grade.toString())!);
 
   }
 }
